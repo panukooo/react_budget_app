@@ -3,6 +3,7 @@ import React, { createContext, useReducer } from 'react';
 // 5. The reducer - this is used to update the state, based on the action
 export const AppReducer = (state, action) => {
     let budget = 0;
+    let newExpenses;
     switch (action.type) {
         case 'ADD_EXPENSE':
             let total_budget = 0;
@@ -30,19 +31,23 @@ export const AppReducer = (state, action) => {
                     ...state
                 }
             }
+
             case 'RED_EXPENSE':
-                const red_expenses = state.expenses.map((currentExp)=> {
-                    if (currentExp.name === action.payload.name && currentExp.cost - action.payload.cost >= 0) {
-                        currentExp.cost =  currentExp.cost - action.payload.cost;
-                        budget = state.budget + action.payload.cost
+                newExpenses = state.expenses.map((item) => {
+                    if(action.payload.name === item.name) {
+                        if(item.cost === 0) {
+                            alert("You have deallocated this department already");
+                        }
+                        item.cost = item.cost - action.payload.cost < 0 ? 0 : item.cost - action.payload.cost;
                     }
-                    return currentExp
-                })
+                    return item;
+                });
+                state.expenses = newExpenses;
                 action.type = "DONE";
                 return {
                     ...state,
-                    expenses: [...red_expenses],
                 };
+
             case 'DELETE_EXPENSE':
             action.type = "DONE";
             state.expenses.map((currentExp)=> {
@@ -74,15 +79,16 @@ export const AppReducer = (state, action) => {
             }
 
         case "DECREASE_EXPENSE":
-            state.expenses.map((item) => {
+            newExpenses = state.expenses.map((item) => {
                 if(action.payload.name === item.id) {
                     if(item.cost === 0) {
                         alert("You have deallocated all funds in this department already")
                     }
                     item.cost = item.cost - action.payload.cost < 0 ? 0 : item.cost - action.payload.cost;
                 }
-                return true;
+                return item;
             });
+            state.expenses = newExpenses;
             action.type = "DONE";
             return {...state};
 
@@ -95,20 +101,13 @@ export const AppReducer = (state, action) => {
 const initialState = {
     budget: 2000,
     expenses: [
-        { id: "Marketing", name: 'Marketing', cost: 50 },
-        { id: "Finance", name: 'Finance', cost: 300 },
-        { id: "Sales", name: 'Sales', cost: 70 },
-        { id: "Human Resource", name: 'Human Resource', cost: 40 },
-        { id: "IT", name: 'IT', cost: 500 },
+        { id: "Marketing", name: 'Marketing', cost: 0 },
+        { id: "Finance", name: 'Finance', cost: 0 },
+        { id: "Sales", name: 'Sales', cost: 0 },
+        { id: "Human Resource", name: 'Human Resource', cost: 0 },
+        { id: "IT", name: 'IT', cost: 0 },
     ],
     currency: '£',
-    /*currencyName: "Pound",
-    currencyList: [
-        {simbol: "$", name: "Dollar"},
-        {simbol: "€", name: "Euro"},
-        {simbol: "₹", name: "Ruppee"},
-        {simbol: "£", name: "Pound"}
-    ]*/
 };
 
 // 2. Creates the context this is the thing our components import and use to get the state
@@ -136,7 +135,6 @@ export const AppProvider = (props) => {
                 remaining: remaining,
                 dispatch,
                 currency: state.currency,
-                //currencyName: state.currencyName
             }}
         >
             {props.children}
