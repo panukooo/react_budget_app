@@ -13,9 +13,9 @@ const CurrencySelector = () => {
     }
 
     return (
-        <div className="alert alert-primary">
+        <div className="alert alert-primary" style={{background: "#93c572", color: "whitesmoke", borderColor: "#93c572"}}>
             <label for="currency">Currency (
-            <select id="currency" name="currency" onChange={(event) => currencyChange(event.target.value)}>
+            <select style={{background: "#93c572", color: "whitesmoke"}} id="currency" name="currency" onChange={(event) => currencyChange(event.target.value)}>
                 <option value="£">£ Pound</option>
                 <option value="$">$ Dollar</option>
                 <option value="€">€ Euro</option>

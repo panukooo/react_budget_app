@@ -57,19 +57,34 @@ export const AppReducer = (state, action) => {
                 ...state,
                 budget
             };
+
         case 'SET_BUDGET':
             action.type = "DONE";
-            state.budget = action.payload;
+            state.budget = action.payload > 20000 ? 20000 : action.payload;
 
             return {
                 ...state,
             };
+
         case 'CHG_CURRENCY':
             action.type = "DONE";
             state.currency = action.payload;
             return {
                 ...state
             }
+
+        case "DECREASE_EXPENSE":
+            state.expenses.map((item) => {
+                if(action.payload.name === item.id) {
+                    if(item.cost === 0) {
+                        alert("You have deallocated all funds in this department already")
+                    }
+                    item.cost = item.cost - action.payload.cost < 0 ? 0 : item.cost - action.payload.cost;
+                }
+                return true;
+            });
+            action.type = "DONE";
+            return {...state};
 
         default:
             return state;
